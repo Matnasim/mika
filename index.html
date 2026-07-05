@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חבר מביא חבר - מטפלת למעונות מיקה</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 500px; width: 100%; text-align: center; }
+        h1 { color: #003399; margin-bottom: 5px; font-size: 1.8rem; }
+        h2 { color: #ff9900; margin-top: 0; font-size: 1.4rem; }
+        .box { background: #f0f4f8; padding: 20px; border-radius: 8px; border-right: 5px solid #003399; text-align: right; margin-bottom: 20px; }
+        label { display: block; margin-top: 15px; font-weight: bold; text-align: right; color: #333; }
+        input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; background: #28a745; color: white; padding: 15px; border: none; border-radius: 5px; margin-top: 25px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        button:disabled { background: #6c757d; }
+        .success-msg { display: none; background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>חבר מביא חבר - מטפלת למעונות מיקה</h1>
+    
+    <form id="referralForm">
+        <label>שם הממליץ/ה *</label>
+        <input type="text" id="recommender_name" required>
+
+        <label>מחלקת הממליץ/ה *</label>
+        <input type="text" id="recommender_dept" required>
+
+        <label>טלפון הממליץ/ה *</label>
+        <input type="tel" id="recommender_phone" required>
+
+        <label>שם המועמדת *</label>
+        <input type="text" id="candidate_name" required>
+
+        <label>טלפון המועמדת *</label>
+        <input type="tel" id="candidate_phone" required>
+
+        <button type="submit" id="submitBtn">שליחת המלצה</button>
+        <div id="successMsg" class="success-msg">ההמלצה נשלחה בהצלחה!</div>
+    </form>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCw0ne4_ekuifhXRn2AF-ZLMN-3zHcUo6k",
+      authDomain: "herzliya-mika.firebaseapp.com",
+      databaseURL: "https://herzliya-mika-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "herzliya-mika",
+      storageBucket: "herzliya-mika.firebasestorage.app",
+      messagingSenderId: "856031239032",
+      appId: "1:856031239032:web:56e077d697a72c8481868d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.getElementById('referralForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "שולח...";
+
+        const data = {
+            jobName: "מטפלת למעונות מיקה",
+            referrer: document.getElementById('recommender_name').value,
+            dept: document.getElementById('recommender_dept').value,
+            phone: document.getElementById('recommender_phone').value,
+            candidate: document.getElementById('candidate_name').value,
+            candidatePhone: document.getElementById('candidate_phone').value,
+            status: "בתהליך",
+            paymentStatus: "לא זכאי",
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            await push(ref(db, 'referrals'), data);
+            document.getElementById('referralForm').reset();
+            document.getElementById('successMsg').style.display = 'block';
+            btn.style.display = 'none';
+        } catch (error) {
+            alert("שגיאה, נסה שוב");
+            btn.disabled = false;
+            btn.innerText = "שליחת המלצה";
+        }
+    });
+</script>
+
+</body>
+</html>
