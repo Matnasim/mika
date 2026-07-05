@@ -7,8 +7,6 @@
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; padding: 20px; }
         .form-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        .header-image { text-align: center; margin-bottom: 20px; }
-        .header-image img { max-width: 100%; height: auto; border-radius: 8px; }
         h2 { text-align: center; color: #1e3a8a; margin-top: 0; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
@@ -20,10 +18,6 @@
 <body>
 
 <div class="form-container">
-    <div class="header-image">
-        <img src="MIKA.png" alt="חבר מביא חבר - מעונות מיקה">
-    </div>
-    
     <h2>טופס המלצה על מועמד/ת</h2>
     <form id="referralForm">
         <div class="form-group">
@@ -46,7 +40,7 @@
             <label>טלפון המועמד/ת *</label>
             <input type="tel" id="candidatePhone" required>
         </div>
-        <button type="submit">שלח המלצה</button>
+        <button type="submit" id="submitBtn">שלח המלצה</button>
     </form>
 </div>
 
@@ -63,6 +57,9 @@
 
     document.getElementById('referralForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "שולח...";
 
         const newReferral = {
             jobName: document.getElementById('jobName').value,
@@ -71,8 +68,6 @@
             candidate: document.getElementById('candidate').value,
             candidatePhone: document.getElementById('candidatePhone').value,
             status: 'בתהליך',
-            startDate: '',
-            paymentStatus: 'טרם שולם',
             timestamp: new Date().toISOString()
         };
 
@@ -80,10 +75,14 @@
             .then(() => {
                 alert("ההמלצה נשלחה בהצלחה!");
                 document.getElementById('referralForm').reset();
+                btn.disabled = false;
+                btn.innerText = "שלח המלצה";
             })
             .catch((error) => {
-                console.error("Error adding document: ", error);
-                alert("אירעה שגיאה בשליחת הטופס. נסה שוב.");
+                console.error("Error:", error);
+                alert("אירעה שגיאה בשליחה. אנא בדוק את הרשאות הכתיבה ב-Firebase.");
+                btn.disabled = false;
+                btn.innerText = "שלח המלצה";
             });
     });
 </script>
