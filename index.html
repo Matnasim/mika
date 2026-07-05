@@ -2,39 +2,57 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>מערכת ניהול - חבר מביא חבר</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>טופס המלצה - חבר מביא חבר</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f7f9; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: right; }
-        th { background-color: #1e3a8a; color: white; }
+        body { font-family: Arial, sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; padding: 20px; }
+        .form-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        .header-image { text-align: center; margin-bottom: 20px; }
+        .header-image img { max-width: 100%; height: auto; border-radius: 8px; }
+        h2 { text-align: center; color: #1e3a8a; margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #1e3a8a; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        button:hover { background-color: #152b65; }
     </style>
 </head>
 <body>
 
-<h1>לוח בקרה: חבר מביא חבר</h1>
-
-<table>
-    <thead>
-        <tr>
-            <th>שם המשרה</th>
-            <th>שם העובד הממליץ</th>
-            <th>מחלקת העובד</th>
-            <th>שם המועמדת</th>
-            <th>טלפון המועמדת</th>
-            <th>סטטוס גיוס</th>
-            <th>תאריך תחילת עבודה</th>
-            <th>זכאות</th>
-            <th>סטטוס תשלום</th>
-        </tr>
-    </thead>
-    <tbody id="referrals-body">
-    </tbody>
-</table>
+<div class="form-container">
+    <div class="header-image">
+        <img src="MIKA.png" alt="חבר מביא חבר - מעונות מיקה">
+    </div>
+    
+    <h2>טופס המלצה על מועמד/ת</h2>
+    <form id="referralForm">
+        <div class="form-group">
+            <label>שם המשרה המומלצת *</label>
+            <input type="text" id="jobName" required>
+        </div>
+        <div class="form-group">
+            <label>שם העובד הממליץ *</label>
+            <input type="text" id="referrer" required>
+        </div>
+        <div class="form-group">
+            <label>מחלקת העובד הממליץ *</label>
+            <input type="text" id="dept" required>
+        </div>
+        <div class="form-group">
+            <label>שם המועמד/ת *</label>
+            <input type="text" id="candidate" required>
+        </div>
+        <div class="form-group">
+            <label>טלפון המועמד/ת *</label>
+            <input type="tel" id="candidatePhone" required>
+        </div>
+        <button type="submit">שלח המלצה</button>
+    </form>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       databaseURL: "https://herzliya-mika-default-rtdb.europe-west1.firebasedatabase.app"
@@ -43,29 +61,30 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const referralsRef = ref(db, 'referrals');
-    onValue(referralsRef, (snapshot) => {
-        const data = snapshot.val();
-        const tbody = document.getElementById('referrals-body');
-        tbody.innerHTML = ''; 
+    document.getElementById('referralForm').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-        if (data) {
-            Object.values(data).forEach(item => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${item.jobName || ''}</td>
-                    <td>${item.referrer || ''}</td>
-                    <td>${item.dept || ''}</td>
-                    <td>${item.candidate || ''}</td>
-                    <td>${item.candidatePhone || ''}</td>
-                    <td>${item.status || 'בתהליך'}</td>
-                    <td>${item.startDate || 'טרם נקבע'}</td>
-                    <td>${item.status === 'התקבלה' ? 'בבדיקה' : 'לא זכאי'}</td>
-                    <td>${item.paymentStatus || 'טרם שולם'}</td>
-                `;
-                tbody.appendChild(tr);
+        const newReferral = {
+            jobName: document.getElementById('jobName').value,
+            referrer: document.getElementById('referrer').value,
+            dept: document.getElementById('dept').value,
+            candidate: document.getElementById('candidate').value,
+            candidatePhone: document.getElementById('candidatePhone').value,
+            status: 'בתהליך',
+            startDate: '',
+            paymentStatus: 'טרם שולם',
+            timestamp: new Date().toISOString()
+        };
+
+        push(ref(db, 'referrals'), newReferral)
+            .then(() => {
+                alert("ההמלצה נשלחה בהצלחה!");
+                document.getElementById('referralForm').reset();
+            })
+            .catch((error) => {
+                console.error("Error adding document: ", error);
+                alert("אירעה שגיאה בשליחת הטופס. נסה שוב.");
             });
-        }
     });
 </script>
 
