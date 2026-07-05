@@ -2,28 +2,25 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>טופס המלצה לעובד</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .form-container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        .header-image { text-align: center; margin-bottom: 20px; }
-        .header-image img { width: 100%; border-radius: 10px; display: block; }
-        h2 { text-align: center; color: #1e3a8a; margin-bottom: 20px; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 14px; background-color: #1e3a8a; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; transition: background 0.3s; }
-        button:hover { background-color: #152b65; }
+        body { font-family: sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .form-container { background: #fff; width: 100%; max-width: 450px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header-image { width: 100%; margin-bottom: 20px; }
+        .header-image img { width: 100%; height: auto; border-radius: 8px; display: block; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 15px; background-color: #0056b3; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="form-container">
     <div class="header-image">
-        <img src="MIKA.jpg" alt="">
+        <img src="MIKA.jpg" alt="מטפלת למעונות מיקה" onerror="this.style.display='none'">
     </div>
-    <h2>טופס המלצה על מועמד/ת</h2>
     <form id="referralForm">
         <div class="form-group">
             <label>שם המשרה המומלצת *</label>
@@ -42,8 +39,8 @@
             <input type="text" id="candidate" required>
         </div>
         <div class="form-group">
-            <label>טלפון המועמד/ת *</label>
-            <input type="tel" id="candidatePhone" required pattern="[0-9]{9,10}" title="נא להזין מספר טלפון תקין (9-10 ספרות ללא מקפים)">
+            <label>טלפון המועמד/ת (9-10 ספרות) *</label>
+            <input type="tel" id="candidatePhone" required pattern="[0-9]{9,10}">
         </div>
         <button type="submit" id="submitBtn">שלח המלצה</button>
     </form>
@@ -53,30 +50,25 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    const firebaseConfig = { databaseURL: "https://herzliya-mika-default-rtdb.europe-west1.firebasedatabase.app" };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db = getDatabase(initializeApp({ databaseURL: "https://herzliya-mika-default-rtdb.europe-west1.firebasedatabase.app" }));
 
     document.getElementById('referralForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        btn.disabled = true; btn.innerText = "שולח...";
-
+        btn.disabled = true;
         push(ref(db, 'referrals'), {
             jobName: document.getElementById('jobName').value,
             referrer: document.getElementById('referrer').value,
             dept: document.getElementById('dept').value,
             candidate: document.getElementById('candidate').value,
-            candidatePhone: document.getElementById('candidatePhone').value,
-            status: 'בתהליך',
-            timestamp: new Date().toISOString()
+            candidatePhone: document.getElementById('candidatePhone').value
         }).then(() => {
-            alert("ההמלצה נשלחה בהצלחה!");
+            alert("נשלח בהצלחה!");
             document.getElementById('referralForm').reset();
-            btn.disabled = false; btn.innerText = "שלח המלצה";
+            btn.disabled = false;
         }).catch(() => {
             alert("שגיאה בשליחה");
-            btn.disabled = false; btn.innerText = "שלח המלצה";
+            btn.disabled = false;
         });
     });
 </script>
