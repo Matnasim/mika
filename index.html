@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>טופס המלצה לעובד</title>
+    <title>טופס המלצה למעונות מיקה</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; padding: 20px; }
-        .form-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        body { font-family: sans-serif; background-color: #f4f7f9; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .form-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
         .header-image { text-align: center; margin-bottom: 20px; }
-        .header-image img { width: 100%; border-radius: 8px; display: block; }
+        .header-image img { width: 100%; max-width: 450px; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
         h2 { text-align: center; color: #1e3a8a; margin-bottom: 20px; }
-        .form-group { margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #1e3a8a; }
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         button { width: 100%; padding: 15px; background-color: #1e3a8a; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
@@ -21,7 +21,7 @@
 
 <div class="form-container">
     <div class="header-image">
-        <img src="MIKA.jpg" alt="">
+        <img src="MIKA.jpg" alt="חבר מביא חבר - מעונות מיקה" onerror="this.onerror=null; this.src='MIKA.png';">
     </div>
     
     <h2>טופס המלצה על מועמד/ת</h2>
@@ -45,7 +45,7 @@
         </div>
         <div class="form-group">
             <label>טלפון המועמד/ת *</label>
-            <input type="tel" id="candidatePhone" required pattern="[0-9]{9,10}" title="נא להזין מספר טלפון תקין בן 9-10 ספרות">
+            <input type="tel" id="candidatePhone" required pattern="[0-9]*">
         </div>
         <button type="submit" id="submitBtn">שלח המלצה</button>
     </form>
