@@ -29,7 +29,7 @@
         </tr>
     </thead>
     <tbody id="referrals-body">
-        </tbody>
+    </tbody>
 </table>
 
 <script type="module">
@@ -43,12 +43,11 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // משיכת נתונים בזמן אמת מ-Firebase
     const referralsRef = ref(db, 'referrals');
     onValue(referralsRef, (snapshot) => {
         const data = snapshot.val();
         const tbody = document.getElementById('referrals-body');
-        tbody.innerHTML = ''; // ניקוי הטבלה לפני טעינה מחדש
+        tbody.innerHTML = ''; 
 
         if (data) {
             Object.values(data).forEach(item => {
