@@ -7,61 +7,33 @@
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; padding: 20px; }
         .form-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        h2 { text-align: center; color: #1e3a8a; margin-top: 0; }
+        h2 { text-align: center; color: #1e3a8a; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
         input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; background-color: #1e3a8a; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
-        button:hover { background-color: #152b65; }
     </style>
 </head>
 <body>
-
 <div class="form-container">
     <h2>טופס המלצה על מועמד/ת</h2>
     <form id="referralForm">
-        <div class="form-group">
-            <label>שם המשרה המומלצת *</label>
-            <input type="text" id="jobName" required>
-        </div>
-        <div class="form-group">
-            <label>שם העובד הממליץ *</label>
-            <input type="text" id="referrer" required>
-        </div>
-        <div class="form-group">
-            <label>מחלקת העובד הממליץ *</label>
-            <input type="text" id="dept" required>
-        </div>
-        <div class="form-group">
-            <label>שם המועמד/ת *</label>
-            <input type="text" id="candidate" required>
-        </div>
-        <div class="form-group">
-            <label>טלפון המועמד/ת *</label>
-            <input type="tel" id="candidatePhone" required>
-        </div>
+        <div class="form-group"><label>שם המשרה המומלצת *</label><input type="text" id="jobName" required></div>
+        <div class="form-group"><label>שם העובד הממליץ *</label><input type="text" id="referrer" required></div>
+        <div class="form-group"><label>מחלקת העובד הממליץ *</label><input type="text" id="dept" required></div>
+        <div class="form-group"><label>שם המועמד/ת *</label><input type="text" id="candidate" required></div>
+        <div class="form-group"><label>טלפון המועמד/ת *</label><input type="tel" id="candidatePhone" required></div>
         <button type="submit" id="submitBtn">שלח המלצה</button>
     </form>
 </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-    const firebaseConfig = {
-      databaseURL: "https://herzliya-mika-default-rtdb.europe-west1.firebasedatabase.app"
-    };
-
-    const app = initializeApp(firebaseConfig);
+    const app = initializeApp({databaseURL: "https://herzliya-mika-default-rtdb.europe-west1.firebasedatabase.app"});
     const db = getDatabase(app);
-
-    document.getElementById('referralForm').addEventListener('submit', function(e) {
+    document.getElementById('referralForm').addEventListener('submit', (e) => {
         e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        btn.disabled = true;
-        btn.innerText = "שולח...";
-
-        const newReferral = {
+        push(ref(db, 'referrals'), {
             jobName: document.getElementById('jobName').value,
             referrer: document.getElementById('referrer').value,
             dept: document.getElementById('dept').value,
@@ -69,23 +41,8 @@
             candidatePhone: document.getElementById('candidatePhone').value,
             status: 'בתהליך',
             timestamp: new Date().toISOString()
-        };
-
-        push(ref(db, 'referrals'), newReferral)
-            .then(() => {
-                alert("ההמלצה נשלחה בהצלחה!");
-                document.getElementById('referralForm').reset();
-                btn.disabled = false;
-                btn.innerText = "שלח המלצה";
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                alert("אירעה שגיאה בשליחה. אנא בדוק את הרשאות הכתיבה ב-Firebase.");
-                btn.disabled = false;
-                btn.innerText = "שלח המלצה";
-            });
+        }).then(() => alert("נשלח בהצלחה!")).catch(() => alert("שגיאה, נסה שוב"));
     });
 </script>
-
 </body>
 </html>
